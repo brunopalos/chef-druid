@@ -24,12 +24,11 @@ action :install do
     mode "0755"
   end
 
-
   # Download and extract
-  druid_dir = "druid-services-#{node[:druid][:version]}"
-  druid_archive = "#{druid_dir}-bin.tar.gz"
+  druid_dir = node[:druid][:druid_dir]
+  druid_archive = node[:druid][:archive]
   remote_file ::File.join(Chef::Config[:file_cache_path], druid_archive) do
-    Chef::Log.info("Installing file '#{druid_archive}' from site '#{node[:druid][:mirror]}'")
+    Chef::Log.info("Installing druid from site '#{node[:druid][:mirror]}'")
     owner "root"
     mode "0644"
     source ::File.join(node[:druid][:mirror], druid_archive)
@@ -61,7 +60,7 @@ action :install do
   end
 
 
-  # Configuration files
+  # Create config directories
   directory ::File.join(node[:druid][:config_dir], node_type) do
     recursive true
     owner node[:druid][:user]
@@ -69,21 +68,39 @@ action :install do
     mode "0755"
   end
 
-  # Clone doesn't seem to work on node
+  directory ::File.join(node[:druid][:config_dir], "_common") do
+    recursive true
+    owner node[:druid][:user]
+    group node[:druid][:group]
+    mode "0755"
+  end
+
+
+  # Select common properties and node type properties
+  # Clone doesn't seem to work on node (so just create new Hashes)
   common_props = node[:druid][:properties].inject(Hash.new) { |h, (k, v)| h[k] = v unless v.is_a?(Hash); h }
   type_specific_props = node[:druid][node_type][:properties].inject(Hash.new) { |h, (k, v)| h[k] = v unless v.is_a?(Hash); h }
+  type_specific_props["druid.service"] = node_type
 
-  props = common_props.merge(type_specific_props)
-  props["druid.service"] = node_type
-
-  template ::File.join(node[:druid][:config_dir], node_type, "runtime.properties") do
+  # Write common config file
+  common_config_dir = ::File.join(node[:druid][:config_dir], "_common")
+  template ::File.join(common_config_dir, "common.runtime.properties") do
     source "properties.erb"
-    variables({:properties => props})
+    variables({:properties => common_props})
     owner node[:druid][:user]
     group node[:druid][:group]
   end
 
-  # Startup script
+  # Write node_type specific config file
+  type_specific_config_dir = ::File.join(node[:druid][:config_dir], node_type)
+  template ::File.join(type_specific_config_dir, "runtime.properties") do
+    source "properties.erb"
+    variables({:properties => type_specific_props})
+    owner node[:druid][:user]
+    group node[:druid][:group]
+  end
+
+  # Startup script, works with upstart template
   service_name = "druid-#{node_type}"
   extra_classpath = node[:druid][node_type]["druid.extra_classpath"] || node[:druid]["druid.extra_classpath"]
   template "/etc/init/#{service_name}.conf" do
@@ -92,13 +109,14 @@ action :install do
                   :node_type => node_type,
                   :user => node[:druid][:user],
                   :group => node[:druid][:group],
-                  :config_dir => ::File.join(node[:druid][:config_dir], node_type),
+                  :type_specific_config_dir => type_specific_config_dir,
+                  :common_config_dir => common_config_dir,
                   :install_dir => node[:druid][:install_dir],
                   :java_opts => node[:druid][node_type][:java_opts] || node[:druid][:java_opts],
                   :timezone => node[:druid][:timezone],
                   :encoding => node[:druid][:encoding],
                   :command_suffix => node[:druid][:log_to_syslog].to_s == "1" ? "2>&1 | logger -t #{service_name}" : "",
-                  :port => props["druid.port"],
+                  :port => type_specific_props["druid.port"],
                   :extra_classpath => (extra_classpath.nil? || extra_classpath.empty?) ? "" : "#{extra_classpath}:"
               })
   end

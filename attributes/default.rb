@@ -2,11 +2,12 @@
 #
 # Licensed under Apache 2.0 - see the LICENSE file
 
-
-# Downloading
-default[:druid][:version] = "0.6.105"
+# Download/install
+default[:druid][:version] = "0.7.0"
 default[:druid][:mirror] = "http://static.druid.io/artifacts/releases"
-default[:druid][:checksum] = "eaa676ea2313f2b99ac84709f449e9b1714c1cf06460c6e476c6ec6cd21e6e7e"
+default[:druid][:druid_dir] = "druid-#{default[:druid][:version]}"
+default[:druid][:archive] = "#{default[:druid][:druid_dir]}-bin.tar.gz"
+default[:druid][:checksum] = "bd3f25b2c8711515c0c5786639bddee5019bd1655cc96b95559f183fbf08e853"
 
 # Installation
 default[:druid][:user] = "druid"
