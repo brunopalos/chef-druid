@@ -24,34 +24,46 @@ action :install do
     mode "0755"
   end
 
-  # Download and extract
-  druid_dir = node[:druid][:druid_dir]
-  druid_archive = node[:druid][:archive]
-  remote_file ::File.join(Chef::Config[:file_cache_path], druid_archive) do
-    Chef::Log.info("Installing druid from site '#{node[:druid][:mirror]}'")
-    owner "root"
-    mode "0644"
-    source ::File.join(node[:druid][:mirror], druid_archive)
-    checksum node[:druid][:checksum]
-    action :create
+  directory node[:druid][:src_dir] do
+    owner node[:druid][:user]
+    group node[:druid][:group]
+    mode "0755"
   end
 
-  execute 'install druid' do
+  # Checkout specified revision of druid from specified repo
+  package 'git'
+  git node[:druid][:src_dir] do
+    repository node[:druid][:repository]
+    revision node[:druid][:revision]
+    action :sync
+    user node[:druid][:user]
+    group node[:druid][:group]
+  end
+
+
+  # Build druid, send output to logfile because it's so verbose it seens to causes problems
+  druid_dir = node[:druid][:druid_dir]
+  druid_archive = "#{node[:druid][:src_dir]}/services/target/druid-#{node[:druid][:version]}*-bin.tar.gz"
+  package 'maven'
+  bash 'compile druid' do
+    cwd node[:druid][:src_dir]
+    code "mvn clean package &>chef_druid_build.log"
+    user node[:druid][:user]
+    group node[:druid][:group]
+    only_if { ::Dir.glob(druid_archive).empty? }
+  end
+
+  # Extract build druid to install dir
+  bash 'install druid' do
     cwd Chef::Config[:file_cache_path]
-    command "chown -R root:root '#{node[:druid][:install_dir]}' && " +
-            "tar -C '#{node[:druid][:install_dir]}' -zxf '#{druid_archive}' && " +
-            "chown -R #{node[:druid][:user]}:#{node[:druid][:group]} '#{node[:druid][:install_dir]}'"
+    code "tar -C #{node[:druid][:install_dir]} -zxf #{druid_archive} && " +
+         "chown -R #{node[:druid][:user]}:#{node[:druid][:group]} '#{node[:druid][:install_dir]}'"
+    user node[:druid][:user]
+    group node[:druid][:group]
   end
 
   link_path = ::File.join(node[:druid][:install_dir], "current")
   Chef::Log.info("Creating #{link_path}")
-  # link link_path do
-  #   owner node[:druid][:user]
-  #   group node[:druid][:group]
-  #   to ::File.join(node[:druid][:install_dir], druid_dir)
-  #   action :delete
-  #   only_if "test -L #{link_path}"
-  # end
 
   link link_path do
     owner node[:druid][:user]
@@ -74,7 +86,6 @@ action :install do
     group node[:druid][:group]
     mode "0755"
   end
-
 
   # Select common properties and node type properties
   # Clone doesn't seem to work on node (so just create new Hashes)

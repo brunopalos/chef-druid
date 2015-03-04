@@ -57,3 +57,4 @@ License and Authors
 Copyright 2014 N3TWORK, Inc.<br>
 Licensed under Apache 2.0<br>
 Written by Yuval Oren (yuval@n3twork.com)
+with contributions by Conrad Lee (conrad@optimizely.com)
