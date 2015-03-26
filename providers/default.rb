@@ -47,7 +47,7 @@ action :install do
   package 'maven'
   bash 'compile druid' do
     cwd node[:druid][:src_dir]
-    code "mvn clean package &>chef_druid_build.log"
+    code "mvn clean package -DskipTests &>chef_druid_build.log"
     user node[:druid][:user]
     group node[:druid][:group]
     only_if { ::Dir.glob(druid_archive).empty? }
