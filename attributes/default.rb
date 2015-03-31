@@ -2,13 +2,8 @@
 #
 # Licensed under Apache 2.0 - see the LICENSE file
 
-# Download/install
+# Select git revision for building druid from source
 default[:druid][:version] = '0.7.0'
-default[:druid][:mirror] = 'http://static.druid.io/artifacts/releases'
-default[:druid][:druid_dir] = 'druid-#{default[:druid][:version]}'
-default[:druid][:archive] = '#{default[:druid][:druid_dir]}-bin.tar.gz'
-default[:druid][:checksum] = "bd3f25b2c8711515c0c5786639bddee5019bd1655cc96b95559f183fbf08e853"
-
 default[:druid][:repository] = 'https://github.com/druid-io/druid.git'
 default[:druid][:revision] = 'e81ac2ba4302d488f6c9a3dda8a89af9c10d35e8' # Release 0.7.0
 
