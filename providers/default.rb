@@ -40,10 +40,9 @@ action :install do
     group node[:druid][:group]
   end
 
+  druid_archive = "#{node[:druid][:src_dir]}/services/target/druid-#{node[:druid][:version]}*-bin.tar.gz"
 
   # Build druid, send output to logfile because it's so verbose it seens to causes problems
-  druid_dir = node[:druid][:druid_dir]
-  druid_archive = "#{node[:druid][:src_dir]}/services/target/druid-#{node[:druid][:version]}*-bin.tar.gz"
   package 'maven'
   bash 'compile druid' do
     cwd node[:druid][:src_dir]
@@ -61,16 +60,22 @@ action :install do
     user node[:druid][:user]
     group node[:druid][:group]
   end
-
+  
+  druid_current_version_path = ::File.join(node[:druid][:install_dir], "druid-#{node[:druid][:vesrion]}")
   link_path = ::File.join(node[:druid][:install_dir], "current")
-  Chef::Log.info("Creating #{link_path}")
+
+  # Remove symlink if it exists because otherwise some versions of chef
+  # (e.g, 12.0.3) won't properly handle permissions in next step
+  bash 'remove druid current version symlink' do
+    code "rm #{link_path}"
+    only_if { ::File.exists?(link_path)}
+  end
 
   link link_path do
     owner node[:druid][:user]
     group node[:druid][:group]
-    to ::File.join(node[:druid][:install_dir], druid_dir)
+    to druid_current_version_path
   end
-
 
   # Create config directories
   directory ::File.join(node[:druid][:config_dir], node_type) do
