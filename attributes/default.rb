@@ -13,6 +13,7 @@ default[:druid][:group] = "druid"
 default[:druid][:src_dir] = "/opt/druid_src"
 default[:druid][:install_dir] = "/opt/druid"
 default[:druid][:config_dir] = "/etc/druid"
+default[:druid][:log_path] = "/var/log/druid"
 
 # Configuration defaults
 default[:druid][:log_to_syslog] = 1

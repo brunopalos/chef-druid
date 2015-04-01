@@ -8,7 +8,7 @@ action :install do
   node_type = @new_resource.node_type
   Chef::Log.info("Setting up a Druid #{node_type} node")
 
-# Create user and group
+# Create user, group, and necessary folders
   group node[:druid][:group] do
     action :create
   end
@@ -25,6 +25,12 @@ action :install do
   end
 
   directory node[:druid][:src_dir] do
+    owner node[:druid][:user]
+    group node[:druid][:group]
+    mode "0755"
+  end
+
+  directory node[:druid][:log_path] do
     owner node[:druid][:user]
     group node[:druid][:group]
     mode "0755"
@@ -112,6 +118,14 @@ action :install do
   template ::File.join(type_specific_config_dir, "runtime.properties") do
     source "properties.erb"
     variables({:properties => type_specific_props})
+    owner node[:druid][:user]
+    group node[:druid][:group]
+  end
+
+  # Write node_type specific log4j2 config file
+  template ::File.join(type_specific_config_dir, "log4j2.xml") do
+    source "log4j2.xml.erb"
+    variables({:node_type => node_type})
     owner node[:druid][:user]
     group node[:druid][:group]
   end
