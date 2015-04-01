@@ -61,7 +61,7 @@ action :install do
     group node[:druid][:group]
   end
   
-  druid_current_version_path = ::File.join(node[:druid][:install_dir], "druid-#{node[:druid][:vesrion]}")
+  druid_current_version_path = ::File.join(node[:druid][:install_dir], "druid-#{node[:druid][:version]}")
   link_path = ::File.join(node[:druid][:install_dir], "current")
 
   # Remove symlink if it exists because otherwise some versions of chef
