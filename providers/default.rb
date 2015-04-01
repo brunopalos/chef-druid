@@ -63,19 +63,10 @@ action :install do
     cwd Chef::Config[:file_cache_path]
     code "tar -C #{node[:druid][:install_dir]} -zxf #{druid_archive} && " +
          "chown -R #{node[:druid][:user]}:#{node[:druid][:group]} '#{node[:druid][:install_dir]}'"
-    user node[:druid][:user]
-    group node[:druid][:group]
   end
   
   druid_current_version_path = ::File.join(node[:druid][:install_dir], "druid-#{node[:druid][:version]}")
   link_path = ::File.join(node[:druid][:install_dir], "current")
-
-  # Remove symlink if it exists because otherwise some versions of chef
-  # (e.g, 12.0.3) won't properly handle permissions in next step
-  bash 'remove druid current version symlink' do
-    code "rm #{link_path}"
-    only_if { ::File.exists?(link_path)}
-  end
 
   link link_path do
     owner node[:druid][:user]
