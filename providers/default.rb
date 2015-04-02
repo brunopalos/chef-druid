@@ -121,7 +121,7 @@ action :install do
     group node[:druid][:group]
   end
 
-  # Startup script, works with upstart template
+  # Upstart template to launch and manage druid process
   service_name = "druid-#{node_type}"
   extra_classpath = node[:druid][node_type]["druid.extra_classpath"] || node[:druid]["druid.extra_classpath"]
   template "/etc/init/#{service_name}.conf" do
@@ -142,6 +142,7 @@ action :install do
               })
   end
 
+  # Launch druid using upstart, restart if it's already running
   service "druid-#{node_type}" do
     provider Chef::Provider::Service::Upstart
     supports :restart => true, :start => true, :stop => true
