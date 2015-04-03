@@ -1,14 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="WARN">
   <Appenders>
-    <RollingFile name="Main" fileName="/var/log/druid/<%= @node_type %>.log" filePattern="/var/log/druid/<%= @node_type %>.%i.log.gz">
-      <PatternLayout pattern="%d{ISO8601} %p [%t] %c - %m%n"/>
-      <Policies>
-        <OnStartupTriggeringPolicy/>
-        <SizeBasedTriggeringPolicy size="100MB"/>
-      </Policies>
-      <DefaultRolloverStrategy max="50"/>
-    </RollingFile>
     <RollingFile name="Metrics" fileName="/var/log/druid/metrics/<%= @node_type %>.log" filePattern="/var/log/druid/metrics/<%= @node_type %>.%i.log.gz">
       <PatternLayout pattern="%m%n"/>
       <Policies>
@@ -17,13 +9,16 @@
       </Policies>
       <DefaultRolloverStrategy max="20"/>
     </RollingFile>
+    <Console name="Console" target="SYSTEM_OUT">
+      <PatternLayout pattern="%d{ISO8601} %p [%t] %c - %m%n"/>
+    </Console>
   </Appenders>
   <Loggers>
     <Logger name="com.metamx.emitter.core.LoggingEmitter" level="info" additivity="false">
       <AppenderRef ref="Metrics"/>
     </Logger>
     <Root level="info">
-      <AppenderRef ref="Main"/>
+      <AppenderRef ref="Console"/>
     </Root>
   </Loggers>
 </Configuration>
