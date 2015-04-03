@@ -27,7 +27,7 @@ default[:druid][:timezone] = "UTC"
 default[:druid][:encoding] = "UTF-8"
 default[:druid][:java_opts] = "-Xmx1G"
 default[:druid][:extra_classpath] = ""
-default[:druid][:properties]["druid.monitoring.monitors"] = '["com.metamx.metrics.SysMonitor","com.metamx.metrics.JvmMonitor","io.druid.server.metrics.ServerMonitor"]'
+default[:druid][:properties]["druid.monitoring.monitors"] = '["io.druid.client.cache.CacheMonitor","com.metamx.metrics.JvmMonitor","io.druid.server.metrics.ServerMonitor"]'
 default[:druid][:properties]["druid.emitter"] = "logging"
 default['java']['jdk_version'] = '7'
 
@@ -45,7 +45,7 @@ default[:druid][:coordinator][:properties]["druid.port"] = 8081
 # Realtime specific config
 default[:druid][:realtime][:properties]["druid.service"] = "realtime"
 default[:druid][:realtime][:properties]["druid.port"] = 8082
-default[:druid][:realtime][:properties]["druid.monitoring.monitors"] = '["com.metamx.metrics.SysMonitor","com.metamx.metrics.JvmMonitor","io.druid.server.metrics.ServerMonitor","io.druid.segment.realtime.RealtimeMetricsMonitor"]'
+default[:druid][:realtime][:properties]["druid.monitoring.monitors"] = '["io.druid.client.cache.CacheMonitor","com.metamx.metrics.JvmMonitor","io.druid.server.metrics.ServerMonitor","io.druid.segment.realtime.RealtimeMetricsMonitor"]'
 
 # Historical specific config
 default[:druid][:historical][:properties]["druid.service"] = "historical"
