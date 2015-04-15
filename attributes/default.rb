@@ -38,9 +38,9 @@ default['java']['jdk_version'] = '7'
 # Broker specific config
 default[:druid][:broker][:properties]["druid.service"] = "broker"
 default[:druid][:broker][:properties]["druid.port"] = 8080
-default[:druid][:Historical][:properties]["druid.monitoring.monitors"] = common_monitors + ["io.druid.client.cache.CacheMonitor"]
-default[:druid][:Historical][:properties]["druid.cache.type"] = 'local'
-default[:druid][:Historical][:properties]["druid.cache.sizeInBytes"] = 2**20 * 100
+default[:druid][:broker][:properties]["druid.monitoring.monitors"] = common_monitors + ["io.druid.client.cache.CacheMonitor"]
+default[:druid][:broker][:properties]["druid.cache.type"] = 'local'
+default[:druid][:broker][:properties]["druid.cache.sizeInBytes"] = 2**20 * 100
 
 # Coordinator specific config
 default[:druid][:coordinator][:properties]["druid.service"] = "coordinator"
@@ -54,9 +54,9 @@ default[:druid][:realtime][:properties]["druid.monitoring.monitors"] = common_mo
 # Historical specific config
 default[:druid][:historical][:properties]["druid.service"] = "historical"
 default[:druid][:historical][:properties]["druid.port"] = 8083
-default[:druid][:Historical][:properties]["druid.monitoring.monitors"] = common_monitors + ["io.druid.client.cache.CacheMonitor","io.druid.server.metrics.ServerMonitor"]
-default[:druid][:Historical][:properties]["druid.cache.type"] = 'local'
-default[:druid][:Historical][:properties]["druid.cache.sizeInBytes"] = 2**20 * 100
+default[:druid][:historical][:properties]["druid.monitoring.monitors"] = common_monitors + ["io.druid.client.cache.CacheMonitor","io.druid.server.metrics.ServerMonitor"]
+default[:druid][:historical][:properties]["druid.cache.type"] = 'local'
+default[:druid][:historical][:properties]["druid.cache.sizeInBytes"] = 2**20 * 100
 
 # Overlord specific config
 default[:druid][:overlord][:properties]["druid.service"] = "overlord"
