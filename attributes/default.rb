@@ -3,9 +3,9 @@
 # Licensed under Apache 2.0 - see the LICENSE file
 
 # Select git revision for building druid from source
-default[:druid][:version] = '0.7.0'
+default[:druid][:version] = '0.7.1.1'
 default[:druid][:repository] = 'https://github.com/druid-io/druid.git'
-default[:druid][:revision] = 'e81ac2ba4302d488f6c9a3dda8a89af9c10d35e8' # Release 0.7.0
+default[:druid][:revision] = '460aca5336ada917da8dee3bef2444ff57544553' # Release 0.7.1.1
 
 # Installation
 default[:druid][:user] = "druid"
@@ -27,7 +27,8 @@ default[:druid][:timezone] = "UTC"
 default[:druid][:encoding] = "UTF-8"
 default[:druid][:java_opts] = "-Xmx1G"
 default[:druid][:extra_classpath] = ""
-default[:druid][:properties]["druid.monitoring.monitors"] = '["io.druid.client.cache.CacheMonitor","com.metamx.metrics.JvmMonitor","io.druid.server.metrics.ServerMonitor"]'
+common_monitors = ["com.metamx.metrics.JvmMonitor"]
+default[:druid][:properties]["druid.monitoring.monitors"] = common_monitors
 default[:druid][:properties]["druid.emitter"] = "logging"
 default['java']['jdk_version'] = '7'
 
@@ -37,6 +38,11 @@ default['java']['jdk_version'] = '7'
 # Broker specific config
 default[:druid][:broker][:properties]["druid.service"] = "broker"
 default[:druid][:broker][:properties]["druid.port"] = 8080
+default[:druid][:broker][:properties]["druid.monitoring.monitors"] = common_monitors + ["io.druid.client.cache.CacheMonitor"]
+default[:druid][:broker][:properties]["druid.cache.type"] = 'local'
+default[:druid][:broker][:properties]["druid.cache.sizeInBytes"] = 2**20 * 100
+default[:druid][:broker][:properties]["druid.broker.cache.useCache"] = "true"
+default[:druid][:broker][:properties]["druid.broker.cache.populateCache"] = "true"
 
 # Coordinator specific config
 default[:druid][:coordinator][:properties]["druid.service"] = "coordinator"
@@ -45,11 +51,16 @@ default[:druid][:coordinator][:properties]["druid.port"] = 8081
 # Realtime specific config
 default[:druid][:realtime][:properties]["druid.service"] = "realtime"
 default[:druid][:realtime][:properties]["druid.port"] = 8082
-default[:druid][:realtime][:properties]["druid.monitoring.monitors"] = '["io.druid.client.cache.CacheMonitor","com.metamx.metrics.JvmMonitor","io.druid.server.metrics.ServerMonitor","io.druid.segment.realtime.RealtimeMetricsMonitor"]'
+default[:druid][:realtime][:properties]["druid.monitoring.monitors"] = common_monitors + ["io.druid.segment.realtime.RealtimeMetricsMonitor"]
 
 # Historical specific config
 default[:druid][:historical][:properties]["druid.service"] = "historical"
 default[:druid][:historical][:properties]["druid.port"] = 8083
+default[:druid][:historical][:properties]["druid.monitoring.monitors"] = common_monitors + ["io.druid.client.cache.CacheMonitor","io.druid.server.metrics.ServerMonitor"]
+default[:druid][:historical][:properties]["druid.cache.type"] = 'local'
+default[:druid][:historical][:properties]["druid.cache.sizeInBytes"] = 2**20 * 100
+default[:druid][:historical][:properties]["druid.historical.cache.useCache"] = "true"
+default[:druid][:historical][:properties]["druid.historical.cache.populateCache"] = "true"
 
 # Overlord specific config
 default[:druid][:overlord][:properties]["druid.service"] = "overlord"
