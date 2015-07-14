@@ -58,7 +58,7 @@ default[:druid][:realtime][:properties]["druid.monitoring.monitors"] = common_mo
 # Historical specific config
 default[:druid][:historical][:properties]["druid.service"] = "historical"
 default[:druid][:historical][:properties]["druid.port"] = 8083
-default[:druid][:historical][:properties]["druid.monitoring.monitors"] = common_monitors + ["io.druid.client.cache.CacheMonitor","io.druid.server.metrics.ServerMonitor"]
+default[:druid][:historical][:properties]["druid.monitoring.monitors"] = common_monitors + ["io.druid.client.cache.CacheMonitor","io.druid.server.metrics.HistoricalMetricsMonitor"]
 default[:druid][:historical][:properties]["druid.cache.type"] = "local"
 default[:druid][:historical][:properties]["druid.cache.sizeInBytes"] = 2**20 * 100
 default[:druid][:historical][:properties]["druid.historical.cache.useCache"] = "true"
