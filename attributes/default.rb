@@ -3,9 +3,9 @@
 # Licensed under Apache 2.0 - see the LICENSE file
 
 # Select git revision for building druid from source
-default[:druid][:version] = '0.8.0-rc1'
+default[:druid][:version] = '0.8.0'
 default[:druid][:repository] = 'https://github.com/optimizely/druid.git'
-default[:druid][:revision] = '59c6b2b279caaa75abe1ddc39a1617504106cbdf' # Release 0.8.0-rc1
+default[:druid][:revision] = '73d42a2a5ca9aa3fadbc9eb072336702551fab18' # Release 0.8.0
 
 # Installation
 default[:druid][:user] = "druid"
