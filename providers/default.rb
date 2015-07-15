@@ -46,7 +46,7 @@ action :install do
     group node[:druid][:group]
   end
 
-  druid_archive = "#{node[:druid][:src_dir]}/services/target/druid-#{node[:druid][:version]}*-bin.tar.gz"
+  druid_archive = "#{node[:druid][:src_dir]}/services/target/druid-#{node[:druid][:version]}-bin.tar.gz"
 
   # Build druid, send output to logfile because it's so verbose it seens to causes problems
   package 'maven'
