@@ -48,7 +48,7 @@ action :install do
 
   druid_archive = "#{node[:druid][:src_dir]}/services/target/druid-#{node[:druid][:version]}-bin.tar.gz"
 
-  # Build druid, send output to logfile because it's so verbose it seens to causes problems
+  # Build druid, send output to logfile because it's so verbose it seems to causes problems
   package 'maven'
   bash 'compile druid' do
     cwd node[:druid][:src_dir]
@@ -56,6 +56,7 @@ action :install do
     user node[:druid][:user]
     group node[:druid][:group]
     only_if { ::Dir.glob(druid_archive).empty? }
+    notifies :restart, "service[druid-#{node_type}]", :delayed
   end
 
   # Extract build druid to install dir
@@ -102,6 +103,7 @@ action :install do
     variables({:properties => common_props})
     owner node[:druid][:user]
     group node[:druid][:group]
+    notifies :restart, "service[druid-#{node_type}]", :delayed
   end
 
   # Write node_type specific config file
@@ -111,6 +113,7 @@ action :install do
     variables({:properties => type_specific_props})
     owner node[:druid][:user]
     group node[:druid][:group]
+    notifies :restart, "service[druid-#{node_type}]", :delayed
   end
 
   # Write node_type specific log4j2 config file
@@ -140,12 +143,13 @@ action :install do
                   :port => type_specific_props["druid.port"],
                   :extra_classpath => (extra_classpath.nil? || extra_classpath.empty?) ? "" : "#{extra_classpath}:"
               })
+    notifies :reload, "service[druid-#{node_type}]", :immediately
   end
 
-  # Launch druid using upstart, restart if it's already running
+  # Launch druid using upstart if necessary
   service "druid-#{node_type}" do
     provider Chef::Provider::Service::Upstart
-    supports :restart => true, :start => true, :stop => true
-    action [:enable, :restart]
+    supports :restart => true, :start => true, :stop => true, :reload => true
+    action [:enable, :start]
   end
 end
