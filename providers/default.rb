@@ -149,7 +149,7 @@ action :install do
   # Launch druid using upstart if necessary
   service "druid-#{node_type}" do
     provider Chef::Provider::Service::Upstart
-    supports :restart => true, :start => true, :stop => true, :reload => true
+    supports :restart => true, :start => true, :stop => true, :reload => true, :status => true
     action [:enable, :start]
   end
 end
