@@ -122,6 +122,7 @@ action :install do
     variables({:node_type => node_type})
     owner node[:druid][:user]
     group node[:druid][:group]
+    notifies :restart, "service[druid-#{node_type}]", :delayed
   end
 
   # Upstart template to launch and manage druid process
@@ -143,7 +144,7 @@ action :install do
                   :port => type_specific_props["druid.port"],
                   :extra_classpath => (extra_classpath.nil? || extra_classpath.empty?) ? "" : "#{extra_classpath}:"
               })
-    notifies :reload, "service[druid-#{node_type}]", :immediately
+    notifies :restart, "service[druid-#{node_type}]", :delayed
   end
 
   # Launch druid using upstart if necessary
