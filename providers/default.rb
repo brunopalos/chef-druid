@@ -152,5 +152,7 @@ action :install do
     provider Chef::Provider::Service::Upstart
     supports :restart => true, :start => true, :stop => true, :reload => true, :status => true
     action [:enable, :start]
+    retries 2
+    retry_delay 2
   end
 end
