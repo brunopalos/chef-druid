@@ -144,7 +144,9 @@ action :install do
                   :port => type_specific_props["druid.port"],
                   :extra_classpath => (extra_classpath.nil? || extra_classpath.empty?) ? "" : "#{extra_classpath}:"
               })
-    notifies :restart, "service[druid-#{node_type}]", :delayed
+    # Upstart restart does not reload configs. Using manual stop/start
+    notifies :stop, "service[druid-#{node_type}]", :delayed
+    notifies :start, "service[druid-#{node_type}]", :delayed
   end
 
   # Launch druid using upstart if necessary
