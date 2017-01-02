@@ -4,7 +4,7 @@ Installs and configures the [Druid](http://druid.io/) real-time analytics system
 
 Requirements
 ------------
-This cookbook is for Debian-based linux systems. It has been tested with Ubuntu using Vagrant as well as Amazon's AWS OpsWorks. Services are managed via *upstart*.
+This cookbook is for Debian-based linux systems. It has been tested with Ubuntu using Vagrant as well as Amazon's AWS OpsWorks. Services are managed via *Supervisor*.
 
 Recipes
 ----------
